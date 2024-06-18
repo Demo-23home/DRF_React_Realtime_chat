@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -19,3 +20,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
+
+
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        email = data.get("email")
+        password = data.get("password")
+
+        if email and password:
+            user = authenticate(username=email, password=password)
+
+            if user:
+                data["user"] = user
+            else:
+                raise serializers.ValidationError("Incorrect email or password")
+        else:
+            raise serializers.ValidationError("Must include 'email' and 'password'")
+
+        return data
