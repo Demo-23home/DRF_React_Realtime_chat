@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model, authenticate
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,17 +17,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data["first_name"],
             last_name=validated_data["last_name"],
         )
-
         return user
 
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    id = serializers.IntegerField(read_only=True)
 
     def validate(self, data):
-        email = data.get("email")
-        password = data.get("password")
+        email = data.get("email", None)
+        password = data.get("password", None)
 
         if email and password:
             user = authenticate(username=email, password=password)
@@ -40,4 +39,8 @@ class LoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError("Must include 'email' and 'password'")
 
+        if not user.is_active:
+            serializers.ValidationError("User is Inactive")
+
+        data = {"id": user.id, "email": email}
         return data
