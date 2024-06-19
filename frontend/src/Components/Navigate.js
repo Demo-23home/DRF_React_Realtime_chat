@@ -9,6 +9,8 @@ const Navigate = () => {
     <Link to="/register">Register</Link>
     <br/>
     <Link to="/login">Login</Link>
+    <br/>
+    <Link to="/chat">chat</Link>
   </div>;
 };
 

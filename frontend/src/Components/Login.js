@@ -42,7 +42,7 @@ const Login = () => {
         <div className="mt-3">
           <TextField
             id="password"
-            type="text"
+            type="password"
             label="password"
             variant="outlined"
             onChange={(e) =>
